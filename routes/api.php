@@ -18,7 +18,10 @@ use \App\Http\Controllers\RoleController;
 |
 */
 //Authentication
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/signout', [AuthController::class, 'login']);
+Route::post('/signin', [AuthController::class, 'login']);
+Route::post('/signup', [AuthController::class, 'register']);
+Route::get('/verify_email', [AuthController::class, 'verifyEmail']);
 
 //Roles
 Route::get('/roles', [RoleController::class, 'index']);

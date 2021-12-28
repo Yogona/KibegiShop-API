@@ -12,6 +12,10 @@ class RoleController extends Controller
     public function index(){
         $roles =  Role::all();
 
-        return response()->json($roles);
+        return response()->json([
+            'status' => '200',
+            'message' => 'Roles were retrieved successfully.',
+            'body' => $roles
+        ]);
     }
 }
