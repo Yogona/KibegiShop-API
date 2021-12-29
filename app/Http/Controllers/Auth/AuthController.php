@@ -11,8 +11,8 @@ use \App\Models\User;
 class AuthController extends Controller
 {
     public function logout(Request $request){
-        $user = User::find($request->id);
-
+        //$user = User::find($request->$_POST['user_id']);
+        return response()->json($request->getContent());
         if(!$user){
             return response()->json([
                 'status' => '204',
@@ -35,7 +35,7 @@ class AuthController extends Controller
         if(!$user || !Hash::check($request->password, $user->password)){
             return response()->json([
                 'status' => '204',
-                'message' => 'Credentials do not match any records.',
+                'message' => 'Credentials do not match any record.',
                 'body' => ''
             ]);
         }
@@ -78,15 +78,42 @@ class AuthController extends Controller
         ]);
     }
 
+    private function hasValidData(Request $request){
+        //Check emptiness
+        if(
+            empty($request['username']) ||
+            empty($request['password']) ||
+            empty($request['f_name'])   ||
+            empty($request['m_name'])   ||
+            empty($request['l_name'])   ||
+            empty($request['gender'])   ||
+            empty($request['nationality'])||
+            empty($request['email'])    ||
+            empty($request['phone'])    ||
+            empty($request['address'])  ||
+            empty($request['role_id'])
+        ){
+            return false;
+        }
+
+        return true;
+    }
+
+    private function sendVerificationEmail(){
+        
+    }
+
     public function register(Request $request){
-       foreach($request->all() as $field){
-           if(empty($field))
-           return response()->json([
-               'status' => '400',
-               'message' => 'Empty field(s) were provided.',
-               'body' => $request->all(),
-           ]);
-       }
+        $isValid = $this->hasValidData($request);
+
+        if(!$isValid){
+            return response()->json([
+                'status' => '400',
+                'message' => 'Check your input fields.',
+                'body' => $request->all(),
+            ]);
+        }
+        
 
        $user = new User();
        $user->username = $request->input('username');

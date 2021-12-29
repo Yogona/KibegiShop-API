@@ -15,13 +15,13 @@ use Illuminate\Support\Facades\Artisan;
 */
 
 Artisan::command('db:reboot', function(){
-    echo "Rolling back all tables.";
+    echo "Rolling back all tables...";
     Artisan::call('migrate:reset');
     echo "\nDone!";
-    echo "\nMigrating tables.";
+    echo "\nMigrating tables...";
     Artisan::call('migrate');
     echo "\nDone!";
-    echo "\nSeeding roles.";
+    echo "\nSeeding roles...";
     Artisan::call('db:seed --class=RoleSeeder');
     echo "\nDone!";
 })->purpose('Reseting database, rebuild and reseed.');
