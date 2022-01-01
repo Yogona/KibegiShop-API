@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'smtp'),
+    'default' => env('MAIL_MAILER', 'failover'),
 
     /*
     |--------------------------------------------------------------------------
@@ -75,6 +75,8 @@ return [
             'transport' => 'failover',
             'mailers' => [
                 'smtp',
+                'mailgun',
+                'postmark',
                 'log',
             ],
         ],
@@ -92,8 +94,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'kibegi-shop@tansoften.com'),
+        'name' => env('MAIL_FROM_NAME', 'Kibegi Shop'),
     ],
 
     /*
