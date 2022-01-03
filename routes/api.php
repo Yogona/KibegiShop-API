@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 //Classes
 use \App\Http\Controllers\Auth\AuthController;
 use \App\Http\Controllers\RoleController;
+use \App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,9 @@ Route::post('/signout', [AuthController::class, 'logout']);
 Route::post('/signin', [AuthController::class, 'login']);
 Route::post('/signup', [AuthController::class, 'register']);
 Route::get('/verify_email/{user}/{token}', [AuthController::class, 'verifyEmail']);
+
+//User
+Route::middleware('auth:sanctum')->get('/profile/{user}', [UserController::class, 'getUser']);
 
 //Roles
 Route::get('/roles', [RoleController::class, 'index']);

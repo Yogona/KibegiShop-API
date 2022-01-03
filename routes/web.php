@@ -15,3 +15,9 @@ use \App\Http\Controllers\AuthController;
 */
 
 Route::get('/email_verification', [AuthController::class, 'emailVerificationStatus']);
+Route::get('/login', function(){
+    return response()->json([
+        'status' => '401',
+        'message' => 'Please login first.',
+    ]);
+})->name('login');

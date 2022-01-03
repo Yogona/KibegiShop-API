@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
 
         Model::unguard();
         RoleSeeder::run();
+        UserSeeder::run();
         Model::reguard();
     }
 }

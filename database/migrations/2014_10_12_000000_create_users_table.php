@@ -25,7 +25,7 @@ class CreateUsersTable extends Migration
             $table->string('email', 255)->unique();
             $table->string('phone', 15)->unique();
             $table->string('address', 255);
-            $table->boolean('is_active');
+            $table->boolean('is_active')->default('0');
             $table->bigInteger('role_id')->index();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

@@ -107,7 +107,6 @@ class AuthController extends Controller
                 ]);
             }
 
-
             $user = new User();
             $user->username = $request->input('username');
             $pwd = $request->input('password');
@@ -120,9 +119,7 @@ class AuthController extends Controller
             $user->email = $request->input('email');
             $user->phone = $request->input('phone');
             $user->address = $request->input('address');
-            $user->is_active = false;
             $user->role_id = $request->input('role_id');
-
             $user->save();
 
             $token = $user->createToken($request->device_name)->plainTextToken;
