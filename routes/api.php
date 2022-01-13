@@ -25,7 +25,8 @@ Route::post('/signup', [AuthController::class, 'register']);
 Route::get('/verify_email/{user}/{token}', [AuthController::class, 'verifyEmail']);
 
 //User
-Route::middleware('auth:sanctum')->get('/profile/{user}', [UserController::class, 'getUser']);
+Route::middleware('auth:sanctum')->get('/profile/user/{user_id}', [UserController::class, 'getUser']);
+Route::middleware('auth:sanctum')->put('/profile/user/update', [UserController::class, 'updateProfile']);
 
 //Roles
 Route::get('/roles', [RoleController::class, 'index']);

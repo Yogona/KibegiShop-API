@@ -57,7 +57,7 @@ class AuthController extends Controller
         $user = User::find($user);
         $token = Hash::make($token);
 
-        if(!$user || !$user->tokens->where('token', $token)){
+        if(!$user){
             return view('email_verification')->with('message', 'Verification link expired.');
         }
 

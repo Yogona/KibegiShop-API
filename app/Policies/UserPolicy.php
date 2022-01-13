@@ -19,6 +19,14 @@ class UserPolicy
         //
     }
 
+    public function canUpdateUser(User $currentUser, User $searchUser){
+        if($currentUser->id !== $searchUser->id){
+            return false;
+        } 
+
+        return true;
+    }
+
     public function canViewUser(User $currentUser, User $searchUser){
         if($currentUser->id !== $searchUser->id){
             return false;
