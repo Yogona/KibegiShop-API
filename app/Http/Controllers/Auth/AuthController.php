@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+use \App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +38,11 @@ class AuthController extends Controller
             return response()->json([
                 'status' => '204',
                 'message' => 'Credentials do not match any record.',
+            ]);
+        }else if(!$user->is_active){
+            return response()->json([
+                'status' => '204',
+                'message' => 'Your account is inactive.',
             ]);
         }
 

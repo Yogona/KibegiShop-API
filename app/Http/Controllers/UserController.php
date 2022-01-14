@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
+    public function __construct(){
+        $this->middleware('auth:sanctum');
+    }
+
     private function hasValidData(Request $request){
         //Check emptiness
         if(
@@ -26,6 +30,72 @@ class UserController extends Controller
         return true;
     }
 
+    public function disableUser(Request $request){
+        $user = User::find($request->user_id);
+
+        if($user){
+            if(!Gate::forUser($request->user())->check('disable-user', $user)){
+                return response()->json([
+                    'status' => '403',
+                    'message' => 'You can not disable this user.',
+                ]);
+            }
+        }else{
+            return response()->json([
+                'status' => '204',
+                'message' => 'User was not found.',
+            ]);
+        }
+
+        try{
+            $user->tokens()->delete();
+            $user->is_active = false;
+            $user->save();
+
+            return response()->json([
+                'status' => '200',
+                'message' => 'Account was disabled successfully.',
+            ]);
+        }catch(\Exception $exc){
+            return response()->json([
+                'status' => '500',
+                'message' => 'Internal server error.',
+            ]);
+        }
+    }
+
+    public function deleteUser(Request $request){
+        $user = User::find($request->user_id);
+
+        if($user){
+            if(!Gate::forUser($request->user())->check('delete-user', $user)){
+                return response()->json([
+                    'status' => '403',
+                    'message' => 'You can not delete this user.',
+                ]);
+            }
+        }else{
+            return response()->json([
+                'status' => '204',
+                'message' => 'User was not found.',
+            ]);
+        }
+
+        try{
+            $user->tokens()->delete();
+            $user->delete();
+            return response()->json([
+                'status' => '200',
+                'message' => 'User was deleted successfully.'
+            ]);
+        }catch(\Exception $exc){
+            return response()->json([
+                'status' => '500',
+                'message' => 'Internal server error.',
+            ]);
+        }
+    }
+
     public function updateProfile(Request $request){
         $user = User::find($request->id);
 
@@ -36,9 +106,7 @@ class UserController extends Controller
                     'message' => 'You can not update this user.',
                 ]);
             }
-        }
-
-        if(!$user){
+        }else{
             return response()->json([
                 'status' => '204',
                 'message' => 'User was not found.',
@@ -92,9 +160,7 @@ class UserController extends Controller
                     'message' => 'You can not view this user.',
                 ]);
             }
-        }
-
-        if(!$searchUser){
+        }else{
             return response()->json([
                 'status' => '204',
                 'message' => 'User was not found.',

@@ -19,8 +19,24 @@ class UserPolicy
         //
     }
 
-    public function canUpdateUser(User $currentUser, User $searchUser){
-        if($currentUser->id !== $searchUser->id){
+    public function canDisableUser(User $currentUser, User $user){
+        if($currentUser->id !== $user->id){
+            return false;
+        } 
+
+        return true;
+    }
+
+    public function canDeleteUser(User $currentUser, User $user){
+        if($currentUser->id !== $user->id){
+            return false;
+        } 
+
+        return true;
+    }
+
+    public function canUpdateUser(User $currentUser, User $user){
+        if($currentUser->id !== $user->id){
             return false;
         } 
 

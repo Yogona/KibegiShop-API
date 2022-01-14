@@ -3,10 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-//Classes
+//My Controller classes
 use \App\Http\Controllers\Auth\AuthController;
 use \App\Http\Controllers\RoleController;
 use \App\Http\Controllers\UserController;
+use \App\Http\Controllers\PaymentProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,13 +26,21 @@ Route::post('/signup', [AuthController::class, 'register']);
 Route::get('/verify_email/{user}/{token}', [AuthController::class, 'verifyEmail']);
 
 //User
-Route::middleware('auth:sanctum')->get('/profile/user/{user_id}', [UserController::class, 'getUser']);
-Route::middleware('auth:sanctum')->put('/profile/user/update', [UserController::class, 'updateProfile']);
+Route::prefix('/profile/user')->group(function(){
+    Route::get('/{user_id}', [UserController::class, 'getUser']);
+    Route::put('/update', [UserController::class, 'updateProfile']);
+    Route::delete('/delete', [UserController::class, 'deleteUser']);
+    Route::put('/disable', [UserController::class, 'disableUser']);
+});
+
+//Payment Profile
+Route::prefix('/profile/payment')->group(function (){
+    Route::post('/add', [PaymentProfileController::class, 'store']);
+});
 
 //Roles
 Route::get('/roles', [RoleController::class, 'index']);
 
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });

@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 use Role;
+use PaymentProfile;
 
 class User extends Authenticatable
 {
@@ -46,5 +47,9 @@ class User extends Authenticatable
 
     public function role(){
         return $this->belongsTo(Role::class);
+    }
+
+    public function payprofiles(){
+        return $this->hasMany(PaymentProfile::class);
     }
 }

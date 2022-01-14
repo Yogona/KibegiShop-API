@@ -26,7 +26,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        //User authorizations
         Gate::define('view-user', [UserPolicy::class, 'canViewUser']);
         Gate::define('update-user', [UserPolicy::class, 'canUpdateUser']);
+        Gate::define('delete-user', [UserPolicy::class, 'canDeleteUser']);
+        Gate::define('disable-user', [UserPolicy::class, 'canDisableUser']);
     }
 }
