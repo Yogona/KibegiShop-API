@@ -7,13 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use \App\Models\User;
 use \App\Mail\AccountVerification;
 
 class AuthController extends Controller
 {
     public function logout(Request $request){
-        $user = User::find($request->input('user_id'));
+        return response($request->user());
         
         if(!$user){
             return response()->json([
@@ -75,40 +76,35 @@ class AuthController extends Controller
         return view('email_verification')->with('message', "Email was verified successfully.");
     }
 
-    private function hasValidData(Request $request){
-        //Check emptiness
-        if(
-            empty($request['username']) ||
-            empty($request['password']) ||
-            empty($request['f_name'])   ||
-            empty($request['m_name'])   ||
-            empty($request['l_name'])   ||
-            empty($request['gender'])   ||
-            empty($request['nationality'])||
-            empty($request['email'])    ||
-            empty($request['phone'])    ||
-            empty($request['address'])  ||
-            empty($request['role_id'])
-        ){
-            return false;
-        }
-
-        return true;
-    }
-
     private function sendVerificationEmail(User $user, $token){
         Mail::to($user->email)->send(new AccountVerification($user->id, $token));
     }
 
     public function register(Request $request){
         try{
-            $isValid = $this->hasValidData($request);
+            $validation = Validator::make(
+                $request->all(),
+                [
+                    'username' => 'required|unique:users,username|max:60',
+                    'password' => 'required',
+                    'confirm_password' => 'required|same:password',
+                    'first_name' => 'required|alpha|regex:/^[A-Z]/',
+                    'middle_name' => 'alpha|regex:/^[A-Z]/',
+                    'last_name' => 'required|alpha|regex:/^[A-Z]/',
+                    'gender' => 'required|alpha|max:1|regex:/^[M,F]/',
+                    'nationality' => 'required|max:100|alpha',
+                    'email' => 'required|email|unique:users,email',
+                    'phone' => 'required|numeric|max:9000000000000000|unique:users,phone',
+                    'address' => 'required',
+                    'role_id' => 'required|numeric'
+                ]
+            );
 
-            if(!$isValid){    
+            if($validation->fails()){    
                 return response()->json([    
                     'status' => '400',    
                     'message' => 'Check your input fields.',    
-                    'body' => $request->all(),    
+                    'body' => $validation->errors(),    
                 ]);
             }
 
@@ -116,9 +112,9 @@ class AuthController extends Controller
             $user->username = $request->input('username');
             $pwd = $request->input('password');
             $user->password = Hash::make($pwd);
-            $user->f_name = $request->input('f_name');
-            $user->m_name = $request->input('m_name');
-            $user->l_name = $request->input('l_name');
+            $user->f_name = $request->input('first_name');
+            $user->m_name = $request->input('middle_name');
+            $user->l_name = $request->input('last_name');
             $user->gender = $request->input('gender');
             $user->nationality = $request->input('nationality');
             $user->email = $request->input('email');

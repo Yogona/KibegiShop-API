@@ -14,8 +14,10 @@ class PaymentProfileController extends Controller
             empty($request->address_one) ||
             empty($request->acc_id)
         ){
-            return true;
+            return false;
         }
+
+        return true;
     }
     /**
      * Display a listing of the resource.
@@ -38,21 +40,40 @@ class PaymentProfileController extends Controller
        if(!$this->hasValidData($request)){
             return response()->json(
                 [
-                    'status' => '403'
+                    'status' => '400',
+                    'message' => 'Please check your inputs.',
+                    'body' => $request->user(),
                 ]
             );
        }
 
-        $paymentProfile = PaymentProfile::create(
-            [
-            'payment_name' => $request->payment_name,
-            'client_names' => $request->client_names,
-            'address_one' => $request->address_one,
-            'address_two' => $request->address_two,
-            'acc_id' => $request->acc_id,
-            'user_id' => $request->user()->id,
-            ]
-        );
+       try{
+            $paymentProfile = PaymentProfile::create(
+                [
+                'payment_name' => $request->payment_name,
+                'client_names' => $request->client_names,
+                'address_one' => $request->address_one,
+                'address_two' => $request->address_two,
+                'acc_id' => $request->acc_id,
+                'user_id' => $request->user(),
+                ]
+            );
+
+            return response()->json(
+                [
+                    'status' => '200',
+                    'message' => 'You added a payment method successfuly.',
+                    'body' => $paymentProfile,
+                ]
+            );
+       }catch(\Exception $exc){
+            return response()->json(
+                [
+                    'status' => '500',
+                    'message' => 'Internal server error.',
+                ]
+            );
+       }
     }
 
     /**
