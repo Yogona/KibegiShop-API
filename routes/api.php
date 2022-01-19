@@ -20,7 +20,7 @@ use \App\Http\Controllers\PaymentProfileController;
 |
 */
 //Authentication
-Route::post('/signout', [AuthController::class, 'logout']);
+Route::post('/signout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/signin', [AuthController::class, 'login']);
 Route::post('/signup', [AuthController::class, 'register']);
 Route::get('/verify_email/{user}/{token}', [AuthController::class, 'verifyEmail']);

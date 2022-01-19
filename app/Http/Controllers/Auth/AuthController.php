@@ -14,16 +14,7 @@ use \App\Mail\AccountVerification;
 class AuthController extends Controller
 {
     public function logout(Request $request){
-        return response($request->user());
-        
-        if(!$user){
-            return response()->json([
-                'status' => '204',
-                'message' => 'User no longer exists!',
-            ]);
-        }
-
-        $user->tokens()->delete();
+        $request->user()->tokens()->delete();
 
         return response()->json([
             'status' => '200',
@@ -61,7 +52,6 @@ class AuthController extends Controller
 
     public function verifyEmail(Request $request, $user, $token){
         $user = User::find($user);
-        $token = Hash::make($token);
 
         if(!$user){
             return view('email_verification')->with('message', 'Verification link expired.');
