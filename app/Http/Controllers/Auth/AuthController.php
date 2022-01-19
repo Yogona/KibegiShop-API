@@ -13,57 +13,85 @@ use \App\Mail\AccountVerification;
 
 class AuthController extends Controller
 {
-    public function logout(Request $request){
-        $request->user()->tokens()->delete();
+    private $serverError = "Internal server error.";
 
-        return response()->json([
-            'status' => '200',
-            'message' => 'User logged out successfully',
-        ]);
+    public function logout(Request $request){
+        try{
+            $request->user()->tokens()->delete();
+
+            return response()->json([
+                'status' => '200',
+                'message' => 'User logged out successfully',
+            ], 200);
+        }catch(\Exception $exc){
+            return response()->json(
+                [
+                    'status' => '500',
+                    'message' => $serverError,
+                ],500
+            );
+        }
     }
 
     public function login(Request $request){
-        $userId = DB::table('users')->where('username', $request->username)->orWhere('phone', $request->username)->orWhere('email', $request->username)->first()->id;
-        $user = User::find($userId);
-        
-        if(!$user || !Hash::check($request->password, $user->password)){
+        try{
+            $userId = DB::table('users')->where('username', $request->username)->orWhere('phone', $request->username)->orWhere('email', $request->username)->first()->id;
+            $user = User::find($userId);
+            
+            if(!$user || !Hash::check($request->password, $user->password)){
+                return response()->json([
+                    'status' => '200',
+                    'message' => 'Credentials do not match any record.',
+                ], 200);
+            }else if(!$user->is_active){
+                return response()->json([
+                    'status' => '204',
+                    'message' => 'Your account is inactive.',
+                ], 200);
+            }
+
+            $token = $user->createToken($request->device_name)->plainTextToken;
+
             return response()->json([
-                'status' => '204',
-                'message' => 'Credentials do not match any record.',
-            ]);
-        }else if(!$user->is_active){
-            return response()->json([
-                'status' => '204',
-                'message' => 'Your account is inactive.',
-            ]);
+                'status' => '200',
+                'message' => "User has been logged in successfully!",
+                'body' => [
+                    'user' => $user,
+                    'token' => $token,
+                ],
+            ], 200);
+        }catch(\Exception $exc){
+            return response()->json(
+                [
+                    'status' => '500',
+                    'message' => $serverError,
+                ], 500
+            );
         }
-
-        $token = $user->createToken($request->device_name)->plainTextToken;
-
-        return response()->json([
-            'status' => '200',
-            'message' => "User has been logged in successfully!",
-            'body' => [
-                'user' => $user,
-                'token' => $token,
-            ],
-        ]);
     }
 
     public function verifyEmail(Request $request, $user, $token){
-        $user = User::find($user);
+        try{
+            $user = User::find($user);
 
-        if(!$user){
-            return view('email_verification')->with('message', 'Verification link expired.');
+            if(!$user){
+                return view('email_verification')->with('message', 'Verification link expired.');
+            }
+
+            $user->is_active = true;
+            $user->email_verified_at = now();
+            $user->updated_at = now();
+            $user->save();
+
+            return view('email_verification')->with('message', "Email was verified successfully.");
+        }catch(\Exception $exc){
+            return response()->json(
+                [
+                    'status' => '500',
+                    'message' => $serverError,
+                ], 500
+            );
         }
-
-
-        $user->is_active = true;
-        $user->email_verified_at = now();
-        $user->updated_at = now();
-        $user->save();
-
-        return view('email_verification')->with('message', "Email was verified successfully.");
     }
 
     private function sendVerificationEmail(User $user, $token){
@@ -95,7 +123,7 @@ class AuthController extends Controller
                     'status' => '400',    
                     'message' => 'Check your input fields.',    
                     'body' => $validation->errors(),    
-                ]);
+                ], 400);
             }
 
             $user = new User();
@@ -124,13 +152,12 @@ class AuthController extends Controller
                     'user' => $user,
                     'token' => $token,
                 ]
-            ]);
+            ], 200);
         }catch(\Exception $exc){
             return response()->json([
                 'status' => '500',
                 'message' => "Internal server error.",
-                'body' => $exc
-            ]);
+            ], 500);
         }
     }
 }

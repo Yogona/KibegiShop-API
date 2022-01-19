@@ -8,26 +8,10 @@ use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
+    private $serverError = "Internal server error.";
+
     public function __construct(){
         $this->middleware('auth:sanctum');
-    }
-
-    private function hasValidData(Request $request){
-        //Check emptiness
-        if(
-            empty($request['f_name'])   ||
-            empty($request['m_name'])   ||
-            empty($request['l_name'])   ||
-            empty($request['gender'])   ||
-            empty($request['nationality'])||
-            empty($request['email'])    ||
-            empty($request['phone'])    ||
-            empty($request['address'])
-        ){
-            return false;
-        }
-
-        return true;
     }
 
     public function disableUser(Request $request){
@@ -38,13 +22,13 @@ class UserController extends Controller
                 return response()->json([
                     'status' => '403',
                     'message' => 'You can not disable this user.',
-                ]);
+                ], 403);
             }
         }else{
             return response()->json([
-                'status' => '204',
+                'status' => '200',
                 'message' => 'User was not found.',
-            ]);
+            ], 200);
         }
 
         try{
@@ -55,12 +39,12 @@ class UserController extends Controller
             return response()->json([
                 'status' => '200',
                 'message' => 'Account was disabled successfully.',
-            ]);
+            ], 200);
         }catch(\Exception $exc){
             return response()->json([
                 'status' => '500',
-                'message' => 'Internal server error.',
-            ]);
+                'message' => $serverError,
+            ], 500);
         }
     }
 
@@ -87,11 +71,11 @@ class UserController extends Controller
             return response()->json([
                 'status' => '200',
                 'message' => 'User was deleted successfully.'
-            ]);
+            ], 200);
         }catch(\Exception $exc){
             return response()->json([
                 'status' => '500',
-                'message' => 'Internal server error.',
+                'message' => $serverError,
             ]);
         }
     }
@@ -104,13 +88,13 @@ class UserController extends Controller
                 return response()->json([
                     'status' => '403',
                     'message' => 'You can not update this user.',
-                ]);
+                ], 403);
             }
         }else{
             return response()->json([
-                'status' => '204',
+                'status' => '200',
                 'message' => 'User was not found.',
-            ]);
+            ], 200);
         }
 
         try{
@@ -121,7 +105,7 @@ class UserController extends Controller
                     'status' => '400',    
                     'message' => 'Check your input fields.',    
                     'body' => $request->all(),    
-                ]);
+                ], 400);
             }
 
             $user->f_name = $request->f_name;
@@ -137,16 +121,13 @@ class UserController extends Controller
             return response()->json([
                 'status' => '200',
                 'message' => 'User was updated successfully.',
-                'body' => [
-                    'user' => $user,
-                ]
-            ]);
+                'body' => $user,
+            ], 200);
         }catch(\Exception $exc){
             return response()->json([
                 'status' => '500',
-                'message' => "Internal server error.",
-                'body' => $exc
-            ]);
+                'message' => $serverError,
+            ], 500);
         }
     }
 
@@ -158,19 +139,19 @@ class UserController extends Controller
                 return response()->json([
                     'status' => '403',
                     'message' => 'You can not view this user.',
-                ]);
+                ], 403);
             }
         }else{
             return response()->json([
-                'status' => '204',
+                'status' => '200',
                 'message' => 'User was not found.',
-            ]);
+            ], 200);
         }
 
         return response()->json([
             'status' => '200',
             'message' => 'User was found successfully.',
             'body' => $searchUser,
-        ]);
+        ], 200);
     }
 }

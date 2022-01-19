@@ -4,21 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\PaymentProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PaymentProfileController extends Controller
 {
-    private function hasValidData(Request $request){
-        if(
-            empty($request->payment_name) ||
-            empty($request->client_names) ||
-            empty($request->address_one) ||
-            empty($request->acc_id)
-        ){
-            return false;
-        }
-
-        return true;
+    public function __construct(){
+        $this->middleware('auth:sanctum');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -37,17 +30,27 @@ class PaymentProfileController extends Controller
      */
     public function store(Request $request)
     {
-       if(!$this->hasValidData($request)){
-            return response()->json(
+       try{
+            $validation = Validator::make(
+                $request->all(),
                 [
-                    'status' => '400',
-                    'message' => 'Please check your inputs.',
-                    'body' => $request->user(),
+                    'payment_name' => 'required',
+                    'client_names' => 'required',
+                    'address_one' => 'required',
+                    'acc_id' => 'required',
                 ]
             );
-       }
 
-       try{
+            if($validation->fails()){
+                return response()->json(
+                    [
+                        'status' => '401',
+                        'body' => 'Check your input fields.',
+                        'body' => $validation->errors(),
+                    ]
+                );
+            }
+
             $paymentProfile = PaymentProfile::create(
                 [
                 'payment_name' => $request->payment_name,
@@ -55,7 +58,7 @@ class PaymentProfileController extends Controller
                 'address_one' => $request->address_one,
                 'address_two' => $request->address_two,
                 'acc_id' => $request->acc_id,
-                'user_id' => $request->user(),
+                'user_id' => $request->user()->id,
                 ]
             );
 
@@ -71,6 +74,7 @@ class PaymentProfileController extends Controller
                 [
                     'status' => '500',
                     'message' => 'Internal server error.',
+                    'body' => $exc,
                 ]
             );
        }
@@ -82,9 +86,73 @@ class PaymentProfileController extends Controller
      * @param  \App\Models\PaymentProfile  $paymentProfile
      * @return \Illuminate\Http\Response
      */
-    public function show(PaymentProfile $paymentProfile)
+
+    public function showProfile(Request $request, $paymentId){
+        try{
+            $paymentProfile = PaymentProfile::find($paymentId);
+
+            if($paymentProfile){
+                if(!Gate::forUser($request->user())->check('view-pay-profile', $paymentProfile)){
+                    return response()->json([
+                        'status' => '403',
+                        'message' => 'You can not view this payment profile.',
+                    ]);
+                }
+            }else{
+                return response()->json([
+                    'status' => '204',
+                    'message' => 'Payment profile was not found.',
+                ]);
+            }
+
+            return response()->json(
+                [
+                    'status' => '200',
+                    'message' => 'Payment profile was retrieved successfully.',
+                    'body' => 'done',
+                ]
+            );
+        }catch(\Exception $exc){
+            return response()->json(
+                [
+                    'status' => '500',
+                    'message' => 'Internal server error.',
+                    'body' => $exc,
+                ]
+            );
+        }
+    }
+
+    public function showProfiles(Request $request)
     {
-        //
+        try{
+            $payProfiles = PaymentProfile::where('user_id', $request->user()->id)->get();
+            
+            if(!$payProfiles){
+                return response()->json(
+                    [
+                        'status' => '204',
+                        'No payment profiles were found.',
+                    ]
+                );
+            }
+            
+            return response()->json(
+                [
+                    'status' => '200',
+                    'message' => 'Payment profile'.((strlen($payProfiles) > 1)?'(s) were':' was').' found.',
+                    'body' => $payProfiles,
+                ]
+            );
+        }catch(\Exception $exc){
+            return response()->json(
+                [
+                    'status' => '500',
+                    'message' => 'Internal server error.',
+                    'body' => $exc,
+                ]
+            );
+        }
     }
 
     /**

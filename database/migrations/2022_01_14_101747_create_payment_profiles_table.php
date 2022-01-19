@@ -20,8 +20,10 @@ class CreatePaymentProfilesTable extends Migration
             $table->string('address_one', 255);
             $table->string('address_two', 255)->nullable();
             $table->string('acc_id', 255);
-            $table->bigInteger('user_id')->index();
+            $table->bigInteger('user_id')->index()->unsigned();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('users')->on('id')->onDelete('restrict')->onUpdate('cascade');
         });
     }
 

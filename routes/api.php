@@ -36,6 +36,8 @@ Route::prefix('/profile/user')->group(function(){
 //Payment Profile
 Route::prefix('/profile/payment')->group(function (){
     Route::post('/add', [PaymentProfileController::class, 'store']);
+    Route::get('/view', [PaymentProfileController::class, 'showProfiles']);
+    Route::get('/view/{id}', [PaymentProfileController::class, 'showProfile']);
 });
 
 //Roles
