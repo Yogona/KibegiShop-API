@@ -43,6 +43,15 @@ Route::prefix('/profile/payment')->group(function (){
 //Roles
 Route::get('/roles', [RoleController::class, 'index']);
 
+//Default response
+Route::fallback(function (){
+    return response()->json(
+        [
+            'status' => '404',
+            'message' => 'Not Found'
+        ], 404
+    );
+});
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });

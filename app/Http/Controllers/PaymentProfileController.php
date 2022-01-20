@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\PaymentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Gate;
 
 class PaymentProfileController extends Controller
 {
+    private $serverError = "Internal server error.";
+
     public function __construct(){
         $this->middleware('auth:sanctum');
     }
@@ -44,10 +47,10 @@ class PaymentProfileController extends Controller
             if($validation->fails()){
                 return response()->json(
                     [
-                        'status' => '401',
+                        'status' => '400',
                         'body' => 'Check your input fields.',
                         'body' => $validation->errors(),
-                    ]
+                    ], 400
                 );
             }
 
@@ -67,15 +70,14 @@ class PaymentProfileController extends Controller
                     'status' => '200',
                     'message' => 'You added a payment method successfuly.',
                     'body' => $paymentProfile,
-                ]
+                ], 200
             );
        }catch(\Exception $exc){
             return response()->json(
                 [
                     'status' => '500',
-                    'message' => 'Internal server error.',
-                    'body' => $exc,
-                ]
+                    'message' => $serverError,
+                ], 500
             );
        }
     }
@@ -96,29 +98,28 @@ class PaymentProfileController extends Controller
                     return response()->json([
                         'status' => '403',
                         'message' => 'You can not view this payment profile.',
-                    ]);
+                    ], 403);
                 }
             }else{
                 return response()->json([
-                    'status' => '204',
+                    'status' => '200',
                     'message' => 'Payment profile was not found.',
-                ]);
+                ], 200);
             }
 
             return response()->json(
                 [
                     'status' => '200',
                     'message' => 'Payment profile was retrieved successfully.',
-                    'body' => 'done',
-                ]
+                    'body' => $paymentProfile,
+                ], 200
             );
         }catch(\Exception $exc){
             return response()->json(
                 [
                     'status' => '500',
-                    'message' => 'Internal server error.',
-                    'body' => $exc,
-                ]
+                    'message' => $serverError,
+                ], 500
             );
         }
     }
@@ -128,29 +129,28 @@ class PaymentProfileController extends Controller
         try{
             $payProfiles = PaymentProfile::where('user_id', $request->user()->id)->get();
             
-            if(!$payProfiles){
+            if(sizeof($payProfiles) < 1){
                 return response()->json(
                     [
-                        'status' => '204',
-                        'No payment profiles were found.',
-                    ]
+                        'status' => '200',
+                        'message' => 'No payment profiles were found.',
+                    ], 200
                 );
             }
             
             return response()->json(
                 [
                     'status' => '200',
-                    'message' => 'Payment profile'.((strlen($payProfiles) > 1)?'(s) were':' was').' found.',
+                    'message' => 'Payment profile'.((sizeof($payProfiles) > 1)?'s were':' was').' found.',
                     'body' => $payProfiles,
-                ]
+                ], 200
             );
         }catch(\Exception $exc){
             return response()->json(
                 [
                     'status' => '500',
-                    'message' => 'Internal server error.',
-                    'body' => $exc,
-                ]
+                    'message' => $serverError,
+                ], 500
             );
         }
     }
