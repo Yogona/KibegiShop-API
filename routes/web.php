@@ -19,5 +19,5 @@ Route::get('/login', function(){
     return response()->json([
         'status' => '401',
         'message' => 'Please login first.',
-    ]);
+    ], 401);
 })->name('login');

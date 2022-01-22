@@ -40,12 +40,12 @@ class AuthController extends Controller
             
             if(!$user || !Hash::check($request->password, $user->password)){
                 return response()->json([
-                    'status' => '200',
+                    'status' => '401',
                     'message' => 'Credentials do not match any record.',
-                ], 200);
+                ], 401);
             }else if(!$user->is_active){
                 return response()->json([
-                    'status' => '204',
+                    'status' => '200',
                     'message' => 'Your account is inactive.',
                 ], 200);
             }

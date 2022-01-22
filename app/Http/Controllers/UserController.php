@@ -14,8 +14,8 @@ class UserController extends Controller
         $this->middleware('auth:sanctum');
     }
 
-    public function disableUser(Request $request){
-        $user = User::find($request->user_id);
+    public function disableUser(Request $request, $userId){
+        $user = User::find($userId);
 
         if($user){
             if(!Gate::forUser($request->user())->check('disable-user', $user)){
@@ -26,9 +26,9 @@ class UserController extends Controller
             }
         }else{
             return response()->json([
-                'status' => '200',
+                'status' => '404',
                 'message' => 'User was not found.',
-            ], 200);
+            ], 404);
         }
 
         try{
@@ -48,8 +48,8 @@ class UserController extends Controller
         }
     }
 
-    public function deleteUser(Request $request){
-        $user = User::find($request->user_id);
+    public function deleteUser(Request $request, $userId){
+        $user = User::find($userId);
 
         if($user){
             if(!Gate::forUser($request->user())->check('delete-user', $user)){
@@ -60,9 +60,9 @@ class UserController extends Controller
             }
         }else{
             return response()->json([
-                'status' => '204',
+                'status' => '404',
                 'message' => 'User was not found.',
-            ]);
+            ], 404);
         }
 
         try{
@@ -80,8 +80,8 @@ class UserController extends Controller
         }
     }
 
-    public function updateProfile(Request $request){
-        $user = User::find($request->id);
+    public function updateProfile(Request $request, $userId){
+        $user = User::find($userId);
 
         if($user){
             if(!Gate::forUser($request->user())->check('update-user', $user)){
@@ -92,9 +92,9 @@ class UserController extends Controller
             }
         }else{
             return response()->json([
-                'status' => '200',
+                'status' => '404',
                 'message' => 'User was not found.',
-            ], 200);
+            ], 404);
         }
 
         try{
@@ -143,9 +143,9 @@ class UserController extends Controller
             }
         }else{
             return response()->json([
-                'status' => '200',
+                'status' => '404',
                 'message' => 'User was not found.',
-            ], 200);
+            ], 404);
         }
 
         return response()->json([

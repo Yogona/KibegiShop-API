@@ -20,21 +20,21 @@ class PayProfilePolicy
         //
     }
 
-    // public function canDeletePayProfile(User $currentUser, PaymentProfile $payProfile){
-    //     if($currentUser->id !== $user->id){
-    //         return false;
-    //     } 
+    public function canDeletePayProfile(User $currentUser, PaymentProfile $payProfile){
+        if($currentUser->id !== $payProfile->user_id){
+            return false;
+        } 
 
-    //     return true;
-    // }
+        return true;
+    }
 
-    // public function canUpdatePayProfile(User $currentUser, User $user){
-    //     if($currentUser->id !== $user->id){
-    //         return false;
-    //     } 
+    public function canUpdatePayProfile(User $currentUser, PaymentProfile $payProfile){
+        if($currentUser->id !== $payProfile->user_id){
+            return false;
+        } 
 
-    //     return true;
-    // }
+        return true;
+    }
 
     public function canViewPayProfile(User $currentUser, PaymentProfile $payProfile){
         if($currentUser->id !== $payProfile->user_id){

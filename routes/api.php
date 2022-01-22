@@ -28,9 +28,9 @@ Route::get('/verify_email/{user}/{token}', [AuthController::class, 'verifyEmail'
 //User
 Route::prefix('/profile/user')->group(function(){
     Route::get('/{user_id}', [UserController::class, 'getUser']);
-    Route::put('/update', [UserController::class, 'updateProfile']);
-    Route::delete('/delete', [UserController::class, 'deleteUser']);
-    Route::put('/disable', [UserController::class, 'disableUser']);
+    Route::put('/update/{user_id}', [UserController::class, 'updateProfile']);
+    Route::delete('/delete/{user_id}', [UserController::class, 'deleteUser']);
+    Route::patch('/disable/{user_id}', [UserController::class, 'disableUser']);
 });
 
 //Payment Profile
@@ -38,6 +38,8 @@ Route::prefix('/profile/payment')->group(function (){
     Route::post('/add', [PaymentProfileController::class, 'store']);
     Route::get('/view', [PaymentProfileController::class, 'showProfiles']);
     Route::get('/view/{id}', [PaymentProfileController::class, 'showProfile']);
+    Route::put('/update/{id}', [PaymentProfileController::class, 'update']);
+    Route::delete('/delete/{id}', [PaymentProfileController::class, 'destroy']);
 });
 
 //Roles
@@ -48,7 +50,7 @@ Route::fallback(function (){
     return response()->json(
         [
             'status' => '404',
-            'message' => 'Not Found'
+            'message' => 'Not Found!'
         ], 404
     );
 });
