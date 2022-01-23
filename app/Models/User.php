@@ -8,9 +8,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-use Role;
-use PaymentProfile;
-
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -47,5 +44,9 @@ class User extends Authenticatable
 
     public function payprofiles(){
         return $this->hasMany(PaymentProfile::class);
+    }
+
+    public function businessProfile(){
+        return $this->hasOne(BusinessProfile::class);
     }
 }

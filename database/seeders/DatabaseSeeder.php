@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         Model::unguard();
         RoleSeeder::run();
         UserSeeder::run();
+        PaymentProfileSeeder::run();
         Model::reguard();
     }
 }

@@ -23,7 +23,7 @@ class CreatePaymentProfilesTable extends Migration
             $table->bigInteger('user_id')->index()->unsigned();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('users')->on('id')->onDelete('restrict')->onUpdate('cascade');
+            //$table->foreign('user_id')->references('users')->on('id')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

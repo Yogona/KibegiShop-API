@@ -6,6 +6,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Gate;
 use \App\Policies\UserPolicy;
 use \App\policies\PayProfilePolicy;
+use \App\Policies\BusinessProfilePolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -28,15 +29,22 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //User authorizations
+        /* Authorizations */
+
+        //User profile
         Gate::define('view-user', [UserPolicy::class, 'canViewUser']);
         Gate::define('update-user', [UserPolicy::class, 'canUpdateUser']);
         Gate::define('delete-user', [UserPolicy::class, 'canDeleteUser']);
         Gate::define('disable-user', [UserPolicy::class, 'canDisableUser']);
 
-        //Payment profile authorizations
+        //Payment profile 
         Gate::define('view-pay-profile', [PayProfilePolicy::class, 'canViewPayProfile']);
         Gate::define('update-pay-profile', [PayProfilePolicy::class, 'canUpdatePayProfile']);
         Gate::define('delete-pay-profile', [PayProfilePolicy::class, 'canDeletePayProfile']);
+
+        //Business profile
+        Gate::define('add-business-profile', [BusinessProfilePolicy::class, 'canAddBusinessProfile']);
+        Gate::define('view-business-profile', [BusinessProfilePolicy::class, 'canViewBusinessProfile']);
+        Gate::define('update-business-profile', [BusinessProfilePolicy::class, 'canUpdateBusinessProfile']);
     }
 }

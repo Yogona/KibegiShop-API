@@ -14,6 +14,26 @@ class PaymentProfileSeeder extends Seeder
      */
     public function run()
     {
-        
+        PaymentProfile::create(
+            [
+                "payment_name" => "Paypal",
+                "client_names" => "Yona Godwin",
+                "address_one" => "Dodoma",
+                "address_two" => "",
+                "acc_id" => "yonagodwin@gmail.com",
+                "user_id" => "1",
+            ]
+        );
+
+        PaymentProfile::create(
+            [
+                "payment_name" => "Paypal",
+                "client_names" => "John Doe",
+                "address_one" => "Dodoma",
+                "address_two" => "",
+                "acc_id" => "johndoe@gmail.com",
+                "user_id" => "2",
+            ]
+        );
     }
 }

@@ -8,6 +8,7 @@ use \App\Http\Controllers\Auth\AuthController;
 use \App\Http\Controllers\RoleController;
 use \App\Http\Controllers\UserController;
 use \App\Http\Controllers\PaymentProfileController;
+use \App\Http\Controllers\BusinessProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,10 @@ use \App\Http\Controllers\PaymentProfileController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+//Roles
+Route::get('/roles', [RoleController::class, 'index']);
+
 //Authentication
 Route::post('/signout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/signin', [AuthController::class, 'login']);
@@ -42,8 +47,12 @@ Route::prefix('/profile/payment')->group(function (){
     Route::delete('/delete/{id}', [PaymentProfileController::class, 'destroy']);
 });
 
-//Roles
-Route::get('/roles', [RoleController::class, 'index']);
+//Business Profile
+Route::prefix('/profile/business')->group(function (){
+    Route::post('/add', [BusinessProfileController::class, 'store']);
+    Route::get('/view/{id}', [BusinessProfileController::class, 'show']);
+    Route::patch('/update/{id}', [BusinessProfileController::class, 'update']);
+});
 
 //Default response
 Route::fallback(function (){

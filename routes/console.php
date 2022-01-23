@@ -17,16 +17,24 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('db:reboot', function(){
     echo "Rolling back all tables...";
     Artisan::call('migrate:reset');
-    //echo "\nDone!";
+    echo "\nDone!";
+
     echo "\nMigrating tables...";
     Artisan::call('migrate');
-    //echo "\nDone!";
+    echo "\nDone!";
+
     echo "\nSeeding roles...";
     Artisan::call('db:seed --class=RoleSeeder');
-    //echo "\nDone!";
+    echo "\nDone!";
+
     echo "\nSeeding users...";
     Artisan::call('db:seed --class=UserSeeder');
     echo "\nDone!";
+
+    echo "\nSeeding payment profiles...";
+    Artisan::call('db:seed --class=PaymentProfileSeeder');
+    echo "\nDone!";
+    
 })->purpose('Reseting database, rebuild and reseed.');
 
 Artisan::command('inspire', function () {
